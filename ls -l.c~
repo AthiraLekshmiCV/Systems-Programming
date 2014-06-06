@@ -1,0 +1,66 @@
+#include <sys/types.h>
+#include<sys/stat.h>
+#include<stdio.h>
+#include<dirent.h>
+#include<pwd.h>
+#include<grp.h>
+#include<time.h>
+#include<string.h>
+#include<stdlib.h>
+#define MAXLENGTH 64
+#define MAXTIME   300
+char file_type(mode_t);
+char* file_perms(mode_t);
+int main(int argc,char* argv[]){
+    DIR *dp;
+    struct dirent *dirp;
+    struct passwd *user;
+    struct group *grp;
+    struct tm *tmp;
+    struct stat filestat;
+    char buf[MAXLENGTH];
+    char timebuf[MAXTIME];
+    if(argc!=2)
+        perror("usage:./a.out directory name\n");
+    if((dp=opendir(argv[1]))==NULL)
+            perror("No such file or directory\n");
+   // if(argv[1]!=NULL)
+     //   strcpy(buf,".");
+    while((dirp=(readdir(dp)))!=NULL){
+       // strcpy(buf,"/");
+       // strcpy(buf,dirp->d_name);
+        //if(lstat(buf,&filestat)<0){
+          //  perror("Error\n");
+            //exit(1);
+        //}
+        lstat(dirp->d_name,&filestat);
+        user = getpwuid(filestat.st_uid);
+   //     grp = getgruid(filestat.st_gid);
+        tmp = localtime(&filestat.st_mtime);
+        strftime(timebuf,sizeof(timebuf),"%H:%M:%S",tmp);
+        printf("%d %s %s %s %s\n",filestat.st_nlink,file_perms(filestat.   st_mode),user->pw_name,timebuf,dirp->d_name);    
+    }
+        
+    return 0;
+}
+
+ 
+
+char * file_perms(mode_t mode){
+
+        char *ptr[] = {"---", "--x","-w-","-wx", "r--","r-x", "rw-","rwx"};
+        static char perms[11];
+        perms[0] = file_type(mode);
+        strcpy(&perms[1], ptr[(mode >> 6)& 7]);
+        strcpy(&perms[4], ptr[(mode >> 3)& 7]);
+        strcpy(&perms[7], ptr[(mode)& 7]);
+        return perms;
+
+}
+char file_type(mode_t mode){
+    char f;
+    if(IS_REG(mode)) f='-';
+    if(IS_DIR(mode))f='d';
+
+}
+
