@@ -25,8 +25,10 @@ int main(int argc,char* argv[]){
     struct stat filestat;
     char buf[MAXLENGTH];
     char timebuf[MAXTIME];
+    
     if(argc!=2)
          perror("usage:./a.out directory name\n");
+    
     if((dp=opendir(argv[1]))==NULL)
          perror("No such file or directory\n");
 
@@ -57,8 +59,7 @@ char* file_perms(mode_t mode){
         mode & S_IROTH ? 'r' : '-',
         mode & S_IWOTH ? 'w' : '-',
         mode & S_IXOTH ? 'x' : '-');
-
-     return perms_buff;
+        return perms_buff;
 
 }
 
