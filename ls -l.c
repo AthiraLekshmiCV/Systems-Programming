@@ -37,18 +37,18 @@ int main(int argc,char * argv[])
 	if(stat(argv[1],&buf)<0){
 	    perror("error");
         }
-	tme=localtime(&buf.st_mtime);
-    strftime(tmbuf,sizeof(tmbuf),"%A %B %H:%M:%S",tme);
-    switch (buf.st_mode & S_IFMT) {
-        case S_IFDIR:  printf("d ");            break;
-        case S_IFREG:  printf("r ");            break;
-        default:       printf("- ");            break;
-    }
-    printf("%s ",usr->pw_name);
-    printf("%s ",grp->gr_name);
-    printf("%d ",buf.st_nlink);
-    printf("%s ",tmbuf);
-    printf("%s\n", de->d_name);
+    	tme=localtime(&buf.st_mtime);
+	strftime(tmbuf,sizeof(tmbuf),"%A %B %H:%M:%S",tme);
+    	switch (buf.st_mode & S_IFMT) {
+        	case S_IFDIR:  printf("d ");            break;
+        	case S_IFREG:  printf("r ");            break;
+        	default:       printf("- ");            break;
+    	}
+    	printf("%s ",usr->pw_name);
+    	printf("%s ",grp->gr_name);
+    	printf("%d ",buf.st_nlink);
+    	printf("%s ",tmbuf);
+    	printf("%s\n", de->d_name);
     }
     closedir(dr);
     return 0;
