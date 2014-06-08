@@ -1,3 +1,9 @@
+/*******************************
+Author:Athira Lekshmi C V
+Date:06-06-2014
+ls -l command implemtation in C
+*******************************/
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -10,15 +16,15 @@
 
 int main(int argc, char* argv[])
 {
-	DIR *mydir;
-       struct dirent *myfile;
-       struct stat mystat;
-       struct passwd *usr;
-       struct group *grp;
-       struct tm *tme;
-       char buf[512];
-       char fileperm[512];
-       char tmbuf[100];    
+    DIR *mydir;
+    struct dirent *myfile;
+    struct stat mystat;
+    struct passwd *usr;
+    struct group *grp;
+    struct tm *tme;
+    char buf[512];
+    char fileperm[512];
+    char tmbuf[100];    
 
 	if(argv[1]==NULL){
   		perror("usage ./a.out file/directory_name\n");
@@ -32,15 +38,15 @@ int main(int argc, char* argv[])
   	
 	
 	usr=getpwuid(mystat.st_mode);
-    	grp=getgrgid(mystat.st_mode);
-        while((myfile = readdir(mydir)) != NULL){
-    		sprintf(buf, "%s/%s", argv[1], myfile->d_name);
+    grp=getgrgid(mystat.st_mode);
+    while((myfile = readdir(mydir)) != NULL){
+            sprintf(buf, "%s/%s", argv[1], myfile->d_name);   //appends the filename with the path
     		if((lstat(buf, &mystat))<0){
     			perror("stat error\n");
     		}  
     		
-	 	switch (mystat.st_mode & S_IFMT) {
-        		case S_IFDIR:  printf("d ");            break;
+	 	    switch (mystat.st_mode & S_IFMT) {
+        	    case S_IFDIR:  printf("d ");            break;
         		case S_IFREG:  printf("r ");            break;
         		default:       printf("- ");            break;
     		}
@@ -48,7 +54,7 @@ int main(int argc, char* argv[])
     		tme=localtime(&mystat.st_mtime);
     		strftime(tmbuf,sizeof(tmbuf),"%A %B %H:%M:%S",tme);
     		 
-    		 sprintf(fileperm,"%c%c%c%c%c%c%c%c%c",
+    		sprintf(fileperm,"%c%c%c%c%c%c%c%c%c",
     		(mystat.st_mode)& S_IRUSR ? 'r':'-',
     		(mystat.st_mode)& S_IWUSR ? 'w':'-',
     		(mystat.st_mode)& S_IXUSR ? 'x':'-',
