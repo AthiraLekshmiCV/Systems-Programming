@@ -1,57 +1,77 @@
-/******************************
-Author:Athira Lekshmi C V
-Date:6-6-2014
-ls -l command implementation
-*****************************/
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <dirent.h>
-#include<sys/types.h>
-#include<sys/stat.h>
-#include<unistd.h>
 #include<pwd.h>
 #include<grp.h>
 #include<time.h>
-#include<stdlib.h>
-int main(int argc,char * argv[])
+
+int main(int argc, char* argv[])
 {
-    struct dirent *de;          // Pointer for directory entry
-    char *ptr;
-    struct stat buf;
-    struct passwd * usr;
-    struct  group *grp;
-    struct tm *tme;
-    char tmbuf[256];
+	DIR *mydir;
+       struct dirent *myfile;
+       struct stat mystat;
+       struct passwd *usr;
+       struct group *grp;
+       struct tm *tme;
+       char buf[512];
+       char fileperm[512];
+       char tmbuf[100];    
 
-    DIR *dr = opendir(argv[1]);   // opendir() returns a pointer of DIR type.
-
-    if (dr == NULL)            // opendir returns NULL if couldn't open directory
-    {
-        printf("Could not opendir current directory" );
-        return 0;
-    }
-
-    usr=getpwuid(buf.st_uid);
-    grp=getgrgid(buf.st_gid);
-
-    while ((de = readdir(dr)) != NULL){
-	if(stat(argv[1],&buf)<0){
-	    perror("error");
-        }
-    	tme=localtime(&buf.st_mtime);
-	strftime(tmbuf,sizeof(tmbuf),"%A %B %H:%M:%S",tme);
-    	switch (buf.st_mode & S_IFMT) {
-        	case S_IFDIR:  printf("d ");            break;
-        	case S_IFREG:  printf("r ");            break;
-        	default:       printf("- ");            break;
+	if(argv[1]==NULL){
+  		perror("usage ./a.out file/directory_name\n");
+  		exit(0);
+  	}
+  	
+  	if((mydir = opendir(argv[1]))==NULL){
+  		perror("no such file or directory\n");
+  		exit(0);
+  	}
+  	
+	
+	usr=getpwuid(mystat.st_mode);
+    	grp=getgrgid(mystat.st_mode);
+        while((myfile = readdir(mydir)) != NULL){
+    		sprintf(buf, "%s/%s", argv[1], myfile->d_name);
+    		if((lstat(buf, &mystat))<0){
+    			perror("stat error\n");
+    		}  
+    		
+	 	switch (mystat.st_mode & S_IFMT) {
+        		case S_IFDIR:  printf("d ");            break;
+        		case S_IFREG:  printf("r ");            break;
+        		default:       printf("- ");            break;
+    		}
+    		
+    		tme=localtime(&mystat.st_mtime);
+    		strftime(tmbuf,sizeof(tmbuf),"%A %B %H:%M:%S",tme);
+    		 
+    		 sprintf(fileperm,"%c%c%c%c%c%c%c%c%c",
+    		(mystat.st_mode)& S_IRUSR ? 'r':'-',
+    		(mystat.st_mode)& S_IWUSR ? 'w':'-',
+    		(mystat.st_mode)& S_IXUSR ? 'x':'-',
+    		(mystat.st_mode)& S_IRGRP ? 'r':'-',
+    		(mystat.st_mode)& S_IRGRP ? 'w':'-',
+    		(mystat.st_mode)& S_IXGRP ? 'x':'-',
+    		(mystat.st_mode)& S_IROTH ? 'r':'-',
+    		(mystat.st_mode)& S_IWOTH ? 'w':'-',
+    		(mystat.st_mode)& S_IXOTH ? 'x':'-'
+    		);
+    		
+    		printf("%s ",fileperm);
+    		printf("%d ",mystat.st_nlink);
+    		printf("%s ",usr->pw_name);
+    		printf("%s ",grp->gr_name);
+    		printf("%s",tmbuf);
+    		printf("%d ",mystat.st_size);
+    		printf("%s\n", myfile->d_name);
+        
     	}
-    	printf("%s ",usr->pw_name);
-    	printf("%s ",grp->gr_name);
-    	printf("%d ",buf.st_nlink);
-    	printf("%s ",tmbuf);
-    	printf("%s\n", de->d_name);
-    }
-    closedir(dr);
-    return 0;
+    	closedir(mydir);
+	return 0;
+
+
+
 }
-
-
