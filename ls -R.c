@@ -1,3 +1,8 @@
+/********************************
+Author:Athira Lekshmi C V
+Date:20-06-2014
+ls -R command implemtation in C
+*******************************/
 #include<sys/stat.h>
 #include<sys/types.h>
 #include<stdio.h>
