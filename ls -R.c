@@ -22,15 +22,15 @@ void recursive_path(char * fname){
 	temp = fname + strlen(fname);
 	*temp = '/';
 	*++temp = 0;
-    if ((dr = opendir(fname)) == 0) 
+        if ((dr = opendir(fname)) == 0) 
 		perror("Can't open this directory");
 		  
-    (stat(fname, &mystat));
+        (stat(fname, &mystat));
 	count = 0;
 	fpath = (char **)malloc(1000*sizeof(char *));
 	while ((dir = readdir(dr)) != NULL) {
 		if(dir->d_name[0]=='.')
-		 continue;
+	  		continue;
 		
 		printf("%s\n",dir->d_name);
 		strcpy(temp,dir->d_name);
